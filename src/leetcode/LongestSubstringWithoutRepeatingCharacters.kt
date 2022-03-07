@@ -4,7 +4,7 @@ object LongestSubstringWithoutRepeatingCharacters {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        println(lengthOfLongestSubstring("abcdeff"))
+        println(lengthOfLongestSubstring("pwwkew"))
     }
 
     fun lengthOfLongestSubstring(s: String): Int {
@@ -23,9 +23,14 @@ object LongestSubstringWithoutRepeatingCharacters {
                 pointerB++
             } else {
                 max = max.coerceAtLeast(dictionary.size)
+                print("${s[pointerA]} removed => ")
                 dictionary.remove(s[pointerA])
                 pointerA++
             }
+            for (i in dictionary) {
+                print("$i ")
+            }
+            println()
         }
 
         return max
