@@ -4,59 +4,32 @@ object LongestCommonPrefix {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        println(longestCommonPrefix(arrayOf("")))
+        println(longestCommonPrefix(arrayOf("a")))
     }
 
     fun longestCommonPrefix(strs: Array<String>): String {
-        val dictionary = HashMap<Char, MutableList<String>>()
+        var currentLongestPrefix = ""
+        var currentPointer = 0
 
-        if (strs.isEmpty() || (strs.size == 1 && strs[0] == "")) {
+        if (strs[0].isEmpty()) {
             return ""
         } else if (strs.size == 1) {
             return strs[0]
         }
 
-        for (str in strs) {
-            if (str.isNotEmpty()) {
-                val prefix = str[0]
-                if (dictionary.contains(prefix)) {
-                    dictionary[prefix]?.add(str)
-                } else {
-                    dictionary[prefix] = mutableListOf(str)
+        while (currentPointer < strs[0].length) {
+            val currentChar = strs[0][currentPointer]
+            for (str in strs) {
+                if (
+                    currentPointer >= str.length || (str[currentPointer] != currentChar)) {
+                    return currentLongestPrefix
                 }
             }
+            currentLongestPrefix += currentChar
+            currentPointer++
         }
 
-        val results = mutableListOf<String>()
-        for (dict in dictionary) {
-            val categories = dict.value
-            var lastPrefix = ""
-            while (categories.size - 1 > 0) {
-                val currentPrefix = getPrefix(categories[0], categories[1])
-
-                lastPrefix = if (lastPrefix.isNotEmpty()) {
-                    val prefix = getPrefix(currentPrefix, lastPrefix)
-                    prefix
-                }  else {
-                    currentPrefix
-                }
-                categories.removeAt(0)
-            }
-            if (lastPrefix.isNotEmpty()) {
-                results.add(lastPrefix)
-            }
-            categories.removeAt(0)
-        }
-
-        var max = Pair(0, "")
-
-        for (result in results) {
-            if (result.length > max.first) {
-                max = Pair(result.length, result)
-            }
-        }
-
-        return max.second
+        return currentLongestPrefix
     }
 
     fun getPrefix(str1: String, str2: String): String {
