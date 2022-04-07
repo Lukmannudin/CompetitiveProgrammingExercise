@@ -1,5 +1,7 @@
 package leetcode
 
+import java.util.*
+
 object RegularExpressionMatching {
 
     @JvmStatic
@@ -12,74 +14,68 @@ object RegularExpressionMatching {
 //        println(isMatch("aaa", "aaaa")) // false
 //        println(isMatch("aaa", "ab*a*c*a")) // true
 //        println(isMatch("aaa", "a*a")) //true
-        println(isMatch("ab", ".*..c*")) //true
-
+        println(isMatch("aasdfasdfasdfasdfas", "aasdf.*asdf.*asdf.*asdf.*s")) //true
+//        println(isMatch("asdfas", ".*asdf.*s")) //true
 //
     }
 
     fun isMatch(s: String, p: String): Boolean {
-        val expressionList = mutableListOf<Char>()
-        val stringList = mutableListOf<Char>()
+        val stringStack = Stack<Char>()
+        val expressionStack = Stack<Char>()
+        var lastPreceeding: Char? = null
 
-        for (str in s) {
-            stringList.add(str)
+        for (char in s) {
+            stringStack.push(char)
         }
 
-        for (exp in p) {
-            expressionList.add(exp)
+        for (char in p) {
+            expressionStack.push(char)
         }
 
-        while (expressionList.isNotEmpty() || stringList.isNotEmpty()) {
-            if (stringList.isEmpty() && expressionList.last() == '*') {
-                expressionList.removeAt(expressionList.lastIndex)
-                val exp = expressionList.removeAt(expressionList.lastIndex)
+        while (stringStack.isNotEmpty() || expressionStack.isNotEmpty()) {
 
-                if (stringList.isEmpty()) {
-                    continue
-                }
-
-                while (
-                    (exp == stringList.last() || exp == '.')
-                ) {
-                    stringList.removeAt(stringList.lastIndex)
+            if (stringStack.isEmpty() && expressionStack.isNotEmpty()) {
+                if (expressionStack.size == 1 && expressionStack.peek() == lastPreceeding) {
+                    return true
+                } else if (expressionStack.peek() != '*') {
+                    return false
                 }
             }
 
-            if (
-                (expressionList.isEmpty() && stringList.isNotEmpty()) ||
-                (expressionList.isNotEmpty() && stringList.isEmpty())
-            ) {
+            if (stringStack.isNotEmpty() && expressionStack.isEmpty()) {
                 return false
             }
 
-            if (expressionList.last() == stringList.last() || expressionList.last() == '.') {
-                expressionList.removeAt(expressionList.lastIndex)
-                stringList.removeAt(stringList.lastIndex)
-            } else if (expressionList.first() == stringList.first() || expressionList.first() == '.') {
-                if (expressionList.size > 1 && expressionList[1] == '*') {
-                    expressionList.removeAt(1)
-                    val exp = expressionList.removeAt(0)
-                    while (stringList.isNotEmpty() && (exp == stringList.first() || exp == '.')) {
-                        stringList.removeAt(0)
+            when (expressionStack.peek()) {
+                '*' -> {
+                    expressionStack.pop()
+                    var exp = expressionStack.pop()
+
+                    if (exp == '.') {
+                        exp = if (stringStack.isEmpty()) {
+                            return true
+                        } else {
+                            stringStack.pop()
+                        }
                     }
-                } else {
-                    expressionList.removeAt(0)
-                    stringList.removeAt(0)
-                }
-            } else if (expressionList.last() == '*') {
-                expressionList.removeAt(expressionList.lastIndex)
-                val exp = expressionList.removeAt(expressionList.lastIndex)
 
-                while (
-                    (stringList.isNotEmpty() && (exp == stringList.last() || exp == '.'))
-                ) {
-                    stringList.removeAt(stringList.lastIndex)
+                    while (
+                        (stringStack.isNotEmpty() && exp != null) &&
+                        (exp == stringStack.peek())
+                    ) {
+                        lastPreceeding = stringStack.pop()
+                    }
                 }
-            }  else {
-                return false
+                stringStack.peek(), '.' -> {
+                    stringStack.pop()
+                    expressionStack.pop()
+                }
+                else -> {
+                    return false
+                }
             }
         }
 
-        return true
+        return expressionStack.isEmpty() && stringStack.isEmpty()
     }
 }
