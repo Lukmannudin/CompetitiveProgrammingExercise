@@ -1,14 +1,12 @@
 package leetcode
 
-import java.lang.Math.abs
-
 object `3SumClosest` {
 
     @JvmStatic
     fun main(args: Array<String>) {
         println(threeSumClosest(intArrayOf(0, 0, 0), 1)) // 0
         println(threeSumClosest(intArrayOf(-1, 2, 1, -4), 1)) // 2
-        println(threeSumClosest(intArrayOf(1,1,1,0), -100)) // 2
+        println(threeSumClosest(intArrayOf(1, 1, 1, 0), -100)) // 2
         println(threeSumClosest(intArrayOf(0, 2, 1, -3), 1)) // 0
         println(threeSumClosest(intArrayOf(1, 1, 1, 0), 100)) // 3
         println(threeSumClosest(intArrayOf(1, 2, 4, 8, 16, 32, 64, 128), 82)) // 82
@@ -58,14 +56,6 @@ object `3SumClosest` {
                         innerPointerB--
                         isBSameWithBefore = isSameLikeBefore(sortedNums, innerPointerB, Type.Right)
                     }
-                }
-                if (isSameLikeBefore(sortedNums, innerPointerA, Type.Left)) {
-                    innerPointerA++
-                    continue
-                }
-                if (isSameLikeBefore(sortedNums, innerPointerB, Type.Right)) {
-                    innerPointerB--
-                    continue
                 }
             }
 
