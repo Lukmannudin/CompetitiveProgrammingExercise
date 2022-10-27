@@ -14,68 +14,108 @@ object RegularExpressionMatching {
 //        println(isMatch("aaa", "aaaa")) // false
 //        println(isMatch("aaa", "ab*a*c*a")) // true
 //        println(isMatch("aaa", "a*a")) //true
-        println(isMatch("aasdfasdfasdfasdfas", "aasdf.*asdf.*asdf.*asdf.*s")) //true
+//        println(isMatch("aasdfasdfasdfasdfas", "aasdf.*asdf.*asdf.*asdf.*s")) //true
 //        println(isMatch("asdfas", ".*asdf.*s")) //true
 //
+//        println(isMatch("aa", "a"))
+//        println(isMatch("aaa", "ab*a*c*a"))
+//        println(isMatch("aba", "aba*"))
+        println(isMatch("aaa", "ab*a*c*a"))
     }
 
     fun isMatch(s: String, p: String): Boolean {
-        val stringStack = Stack<Char>()
-        val expressionStack = Stack<Char>()
-        var lastPreceeding: Char? = null
+        val stackPattern = Stack<Char>()
+        var stringPointer = s.length - 1
+        var dumpHelper: Char? = null
 
-        for (char in s) {
-            stringStack.push(char)
+        for (pattern in p) {
+            stackPattern.push(pattern)
         }
 
-        for (char in p) {
-            expressionStack.push(char)
-        }
-
-        while (stringStack.isNotEmpty() || expressionStack.isNotEmpty()) {
-
-            if (stringStack.isEmpty() && expressionStack.isNotEmpty()) {
-                if (expressionStack.size == 1 && expressionStack.peek() == lastPreceeding) {
-                    return true
-                } else if (expressionStack.peek() != '*') {
-                    return false
+        while (stackPattern.isNotEmpty()) {
+            if (stringPointer < 0) {
+                val pattern = stackPattern.peek()
+                if (pattern == '*') {
+                    stackPattern.pop()
+                    stackPattern.pop()
+                    continue
+                } else {
+                    break
                 }
             }
 
-            if (stringStack.isNotEmpty() && expressionStack.isEmpty()) {
-                return false
+            var expectedPattern = stackPattern.pop()
+            val expectedChar = s[stringPointer]
+
+            if (expectedPattern == '.') {
+                expectedPattern = expectedChar
             }
 
-            when (expressionStack.peek()) {
-                '*' -> {
-                    expressionStack.pop()
-                    var exp = expressionStack.pop()
+            println("$expectedChar == $expectedPattern | $dumpHelper")
+            if (expectedPattern == expectedChar) {
+                stringPointer--
+            } else {
+                if (expectedPattern == '*') {
+                    dumpHelper = stackPattern.peek()
+                }
 
-                    if (exp == '.') {
-                        exp = if (stringStack.isEmpty()) {
-                            return true
-                        } else {
-                            stringStack.pop()
-                        }
+                if (dumpHelper != null) {
+                    if (expectedChar == dumpHelper) {
+                        stringPointer--
+                    } else {
+                        stackPattern.pop()
+                        dumpHelper = null
                     }
-
-                    while (
-                        (stringStack.isNotEmpty() && exp != null) &&
-                        (exp == stringStack.peek())
-                    ) {
-                        lastPreceeding = stringStack.pop()
-                    }
-                }
-                stringStack.peek(), '.' -> {
-                    stringStack.pop()
-                    expressionStack.pop()
-                }
-                else -> {
-                    return false
+                } else {
+                    break
                 }
             }
         }
 
-        return expressionStack.isEmpty() && stringStack.isEmpty()
+
+        return stringPointer == -1 && stackPattern.isEmpty()
     }
+
+    //    fun isMatch(s: String, p: String): Boolean {
+//        var pointerString = 0
+//        var pointerPattern = 0
+//
+//        var expectedChar: Char
+//        var expectedPattern: Char
+//
+//
+//        while (pointerPattern < p.length) {
+//            if (pointerString >= s.length) {
+//                pointerString--
+//                pointerPattern++
+//            }
+//
+//            expectedPattern = p[pointerPattern]
+//            expectedChar = s[pointerString]
+//
+//            if (expectedPattern == '.') {
+//                expectedPattern = expectedChar
+//            }
+//
+//            if (expectedPattern == expectedChar) {
+//                pointerPattern++
+//                pointerString++
+//            } else {
+//                println("$expectedPattern = $expectedChar")
+//
+//                if (expectedPattern == '*') {
+//                    if (expectedChar != p[pointerPattern - 1]) {
+//                        pointerString++
+//                    } else {
+//                        pointerPattern++
+//                    }
+//                } else {
+//                    pointerPattern++
+//                }
+//                println()
+//            }
+//        }
+//
+//        return pointerString == s.length && pointerPattern == p.length
+//    }
 }

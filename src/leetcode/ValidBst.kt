@@ -18,8 +18,6 @@ object ValidBst {
             return true
         }
 
-
-
         val max = root.`val`.coerceAtLeast(Int.MAX_VALUE)
         val min = root.`val`.coerceAtMost(Int.MIN_VALUE)
 
